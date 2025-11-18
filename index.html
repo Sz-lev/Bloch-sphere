@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Three.js Gömb</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="buttons">
+        <button id="XGate">X Gate</button>
+        <button id="YGate">Y Gate</button>
+        <button id="ZGate">Z Gate</button>
+        <button id="SGate">S Gate</button>
+        <button id="Hadamard">Hadamard Gate</button>
+        <div class="slidecontainer">
+            <span>0</span>
+            <input type="range" min="0" max="180" value="90" class="slider" id="half">
+            <span>π</span>
+        </div>
+        <div class="slidecontainer">
+            <span>0</span>
+            <input type="range" min="0" max="360" value="180" class="slider" id="whole">
+            <span>2π</span>
+        </div>
+    </div>
+    <div id="container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/three@0.146.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/renderers/CSS2DRenderer.js"></script>
+<script src="script.js"></script>
+
+
+</body>
+
+</html>

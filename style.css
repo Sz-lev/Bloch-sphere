@@ -1,0 +1,29 @@
+body {
+    margin: 0;
+    overflow: scroll;
+}
+
+div#container {
+    width: 800px;
+    height: 800px;
+    position: relative;
+    padding: 0;
+    background-color: blue;
+    float: left;
+}
+
+div#buttons {
+    float: right;
+    width: calc(100% - 800px);
+    text-align: center;
+}
+
+button {
+    margin: 5px;
+    padding: 10px;
+    font-size: 16px;
+}
+
+.slidecontainer {
+    margin-top: 10px;
+}
