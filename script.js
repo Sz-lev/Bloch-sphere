@@ -16,7 +16,7 @@ camera.lookAt(0, 0, 0);
 
 const renderer = new THREE.WebGLRenderer();
 
-let qubitList = []
+
 
 renderer.setSize(container.clientWidth, container.clientHeight);
 
@@ -80,8 +80,6 @@ scene.add(lineZ);
 
 
 //arrow
-
-
 let dir = new THREE.Vector3(Math.cos(beta) * Math.sin(alfa), Math.cos(alfa), Math.sin(beta) * Math.sin(alfa));
 const origin = new THREE.Vector3(0, 0, 0);
 let hex = 0xff0000;
@@ -89,12 +87,35 @@ const arrowHelper = new THREE.ArrowHelper(dir, origin, 1, hex);
 
 scene.add(arrowHelper);
 
+let qubitList = new Map();
+let index = 1;
+
 function addArrow() {
     let newDir = new THREE.Vector3(dir.x, dir.y, dir.z);
-    hex = Math.floor(Math.random()*(256*256*256));
+    hex = Math.floor(Math.random() * (256 * 256 * 256));
+    const qubitName = "QuBit_" + index;
     const newArrowHelper = new THREE.ArrowHelper(newDir, origin, 1, hex);
-    qubitList.push([newDir, newArrowHelper]);
+    qubitList.set(qubitName, [newDir, newArrowHelper]);
+    
     scene.add(newArrowHelper);
+
+    const divElement = document.createElement("div");
+    const spanElement = document.createElement("span");
+    spanElement.textContent = qubitName;
+    divElement.appendChild(spanElement);
+    const delButton = document.createElement("button");
+    delButton.textContent = "Delete";
+    delButton.addEventListener("click", () => {
+        document.getElementById("qubits").removeChild(divElement);
+        qubitList.delete(qubitName);
+        scene.remove(newArrowHelper);
+
+    });
+    divElement.appendChild(delButton);
+
+    document.getElementById("qubits").appendChild(divElement);
+
+    index = index + 1;
 }
 
 //labels
@@ -145,7 +166,7 @@ function animate() {
 
 //TODO functions to rotate
 function invokeXGate() {
-    for (let element of qubitList) {
+    for (let element of qubitList.values()) {
         XGate(element[0], element[1])
     }
 
@@ -160,7 +181,7 @@ function XGate(direction, arrow) {
 }
 
 function invokeYGate() {
-    for (let element of qubitList) {
+    for (let element of qubitList.values()) {
         YGate(element[0], element[1])
     }
 
@@ -175,7 +196,7 @@ function YGate(direction, arrow) {
 }
 
 function invokeZGate() {
-    for (let element of qubitList) {
+    for (let element of qubitList.values()) {
         ZGate(element[0], element[1])
     }
 
@@ -190,7 +211,7 @@ function ZGate(direction, arrow) {
 }
 
 function invokeHadamardGate() {
-    for (let element of qubitList) {
+    for (let element of qubitList.values()) {
         HadamardGate(element[0], element[1])
     }
 
@@ -208,7 +229,7 @@ function HadamardGate(direction, arrow) {
 }
 
 function applySGate() {
-    for (let element of qubitList) {
+    for (let element of qubitList.values()) {
         SGate(element[0], element[1])
     }
 
@@ -230,7 +251,6 @@ function setAngles() {
     dir.x = Math.cos(beta) * Math.sin(alfa);
     dir.y = Math.cos(alfa);
     dir.z = Math.sin(beta) * Math.sin(alfa);
-    console.log(dir);
     arrowHelper.setDirection(dir);
 }
 
@@ -286,7 +306,7 @@ function addHGate() {
 }
 
 function invokeGates() {
-    for(let i = 0; i < gatesfun.length; i++) {
+    for (let i = 0; i < gatesfun.length; i++) {
         gatesfun[i]();
     }
 }
