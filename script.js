@@ -109,7 +109,6 @@ function addArrow() {
         document.getElementById("qubits").removeChild(divElement);
         qubitList.delete(qubitName);
         scene.remove(newArrowHelper);
-
     });
     divElement.appendChild(delButton);
 
