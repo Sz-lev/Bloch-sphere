@@ -12,7 +12,7 @@ div#container {
     float: left;
 }
 
-div#buttons {
+div.Right-Plain {
     float: right;
     width: calc(100% - 800px);
     text-align: center;
@@ -26,4 +26,8 @@ button {
 
 .slidecontainer {
     margin-top: 10px;
+}
+
+#buildGate {
+    display: none;
 }

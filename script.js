@@ -1,22 +1,22 @@
-// import * as THREE from "three";
-// import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-// import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+import * as THREE from "three";
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
 
 const container = document.getElementById("container");
-let alfa = document.getElementById("half").value/180*Math.PI;
-let beta = document.getElementById("whole").value/180*Math.PI;
+let alfa = document.getElementById("half").value / 180 * Math.PI;
+let beta = document.getElementById("whole").value / 180 * Math.PI;
 
 const scene = new THREE.Scene();
 
-const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.5, 50);
+const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.5, 25);
 
 camera.position.set(1, 1, 3);
 camera.lookAt(0, 0, 0);
 
 const renderer = new THREE.WebGLRenderer();
 
-
+let qubitList = []
 
 renderer.setSize(container.clientWidth, container.clientHeight);
 
@@ -34,7 +34,6 @@ const sphere = new THREE.Mesh(sphereGeo, sphereMat);
 
 scene.add(sphere);
 
-
 //Circle
 let circlePoints = []
 
@@ -43,7 +42,7 @@ for (let i = 0; i <= 50; i++) {
     circlePoints.push(new THREE.Vector3(Math.sin(i * transmission), Math.cos(i * transmission), 0));
 }
 
-const circleMat = new THREE.LineBasicMaterial({ color: 0xffffff});
+const circleMat = new THREE.LineBasicMaterial({ color: 0xffffff });
 const circleGeo = new THREE.BufferGeometry().setFromPoints(circlePoints);
 const circle1 = new THREE.Line(circleGeo, circleMat);
 const circle2 = new THREE.Line(circleGeo, circleMat);
@@ -54,6 +53,7 @@ circle3.rotateY(Math.PI / 2);
 scene.add(circle1);
 scene.add(circle2);
 scene.add(circle3);
+
 
 //Axis
 let axisPointsX = [new THREE.Vector3(1, 0, 0), new THREE.Vector3(-1, 0, 0)];
@@ -78,15 +78,27 @@ scene.add(lineX);
 scene.add(lineY);
 scene.add(lineZ);
 
+
 //arrow
-let dir = new THREE.Vector3(Math.cos(beta)*Math.sin(alfa), Math.cos(alfa), Math.sin(beta)*Math.sin(alfa));
-const origin = new THREE.Vector3(0,0,0);
-const hex = 0xff0000;
-const arrowHelper = new THREE.ArrowHelper( dir, origin, 1, hex );
-scene.add( arrowHelper );
+
+
+let dir = new THREE.Vector3(Math.cos(beta) * Math.sin(alfa), Math.cos(alfa), Math.sin(beta) * Math.sin(alfa));
+const origin = new THREE.Vector3(0, 0, 0);
+let hex = 0xff0000;
+const arrowHelper = new THREE.ArrowHelper(dir, origin, 1, hex);
+
+scene.add(arrowHelper);
+
+function addArrow() {
+    let newDir = new THREE.Vector3(dir.x, dir.y, dir.z);
+    hex = Math.floor(Math.random()*(256*256*256));
+    const newArrowHelper = new THREE.ArrowHelper(newDir, origin, 1, hex);
+    qubitList.push([newDir, newArrowHelper]);
+    scene.add(newArrowHelper);
+}
 
 //labels
-const labelRenderer = new THREE.CSS2DRenderer();
+const labelRenderer = new CSS2DRenderer();
 labelRenderer.setSize(container.clientWidth, container.clientHeight);
 labelRenderer.domElement.style.position = 'absolute';
 labelRenderer.domElement.style.top = '0px';
@@ -100,7 +112,7 @@ function makeLabel(text, position) {
     div.style.color = 'white';
     div.style.fontSize = '20px';
 
-    const label = new THREE.CSS2DObject(div);
+    const label = new CSS2DObject(div);
     label.position.copy(position);
     return label;
 }
@@ -112,89 +124,191 @@ scene.add(makeLabel("|–⟩", new THREE.Vector3(-1.1, 0, 0)));
 scene.add(makeLabel("|0⟩", new THREE.Vector3(0, 1.1, 0)));
 scene.add(makeLabel("|1⟩", new THREE.Vector3(0, -1.1, 0)));
 
-const controls = new THREE.OrbitControls(camera, container);
+const controls = new OrbitControls(camera, container);
 
 animate();
 controls.update();
 
 function animate() {
     requestAnimationFrame(animate);
-    
+
     controls.update();
     renderer.render(scene, camera);
     labelRenderer.render(scene, camera);
 }
 
-window.addEventListener("resize", () => {
-    camera.aspect = container.clientWidth / container.clientHeight;
-    renderer.setSize(container.clientWidth, container.clientHeight);
-    labelRenderer.setSize(container.clientWidth, container.clientHeight);
-});
+// window.addEventListener("resize", () => {
+//     camera.aspect = container.clientWidth / container.clientHeight;
+//     renderer.setSize(container.clientWidth, container.clientHeight);
+//     labelRenderer.setSize(container.clientWidth, container.clientHeight);
+// });
 
 //TODO functions to rotate
-function applyXGate() {
-    dir.y = -dir.y;
-    dir.z = -dir.z;
-    arrowHelper.setDirection(dir);
+function invokeXGate() {
+    for (let element of qubitList) {
+        XGate(element[0], element[1])
+    }
+
+    XGate(dir, arrowHelper);
     setSlides();
 }
 
-function applyYGate() {
-    dir.x = -dir.x;
-    dir.z = -dir.z;
-    arrowHelper.setDirection(dir);
+function XGate(direction, arrow) {
+    direction.y = -direction.y;
+    direction.z = -direction.z;
+    arrow.setDirection(direction);
+}
+
+function invokeYGate() {
+    for (let element of qubitList) {
+        YGate(element[0], element[1])
+    }
+
+    YGate(dir, arrowHelper);
     setSlides();
 }
 
-function applyZGate() {
-    dir.x = -dir.x;
-    dir.y = -dir.y;
-    arrowHelper.setDirection(dir);
+function YGate(direction, arrow) {
+    direction.x = -direction.x;
+    direction.z = -direction.z;
+    arrow.setDirection(direction);
+}
+
+function invokeZGate() {
+    for (let element of qubitList) {
+        ZGate(element[0], element[1])
+    }
+
+    ZGate(dir, arrowHelper);
     setSlides();
 }
 
-function applyHadamardGate() {
-    let tmp = dir.y;
-    dir.y = dir.x;
-    dir.x = tmp;
-    dir.z = -dir.z;
-    arrowHelper.setDirection(dir);
+function ZGate(direction, arrow) {
+    direction.x = -direction.x;
+    direction.y = -direction.y;
+    arrow.setDirection(direction);
+}
+
+function invokeHadamardGate() {
+    for (let element of qubitList) {
+        HadamardGate(element[0], element[1])
+    }
+
+    HadamardGate(dir, arrowHelper);
     setSlides();
+}
+
+function HadamardGate(direction, arrow) {
+    let tmp = direction.y;
+    direction.y = direction.x;
+    direction.x = tmp;
+    direction.z = -direction.z;
+
+    arrow.setDirection(direction);
 }
 
 function applySGate() {
-    // setAngles();
-    // dir.x = Math.cos(beta - Math.PI/2)*Math.sin(alfa);
-    // dir.z = Math.sin(beta - Math.PI/2)*Math.sin(alfa);
-    let tmp = -dir.x;
-    dir.x = dir.z;
-    dir.z = tmp;
-    arrowHelper.setDirection(dir);
+    for (let element of qubitList) {
+        SGate(element[0], element[1])
+    }
+
+    SGate(dir, arrowHelper);
     setSlides();
 }
 
+function SGate(direction, arrow) {
+    let tmp = -direction.x;
+    direction.x = direction.z;
+    direction.z = tmp;
+    arrow.setDirection(direction);
+}
+
 function setAngles() {
-    alfa = document.getElementById("half").value/180*Math.PI;
-    beta = document.getElementById("whole").value/180*Math.PI;
-    dir = new THREE.Vector3(Math.cos(beta)*Math.sin(alfa), Math.cos(alfa), Math.sin(beta)*Math.sin(alfa));
+    alfa = document.getElementById("half").value / 180 * Math.PI;
+    beta = document.getElementById("whole").value / 180 * Math.PI;
+
+    dir.x = Math.cos(beta) * Math.sin(alfa);
+    dir.y = Math.cos(alfa);
+    dir.z = Math.sin(beta) * Math.sin(alfa);
+    console.log(dir);
     arrowHelper.setDirection(dir);
 }
 
 function setSlides() {
-    let res = ((Math.atan2(dir.z,dir.x))/Math.PI*180);
-    if(res < 0) {
-        document.getElementById("whole").value = (Math.PI*2 + (Math.atan2(dir.z,dir.x)))/Math.PI*180;
+    let res = ((Math.atan2(dir.z, dir.x)) / Math.PI * 180);
+    if (res < 0) {
+        beta = Math.PI * 2 + (Math.atan2(dir.z, dir.x));
+        document.getElementById("whole").value = (beta) / Math.PI * 180;
     } else {
-        document.getElementById("whole").value = (Math.atan2(dir.z,dir.x))/Math.PI*180;
+        beta = Math.atan2(dir.z, dir.x);
+        document.getElementById("whole").value = (beta) / Math.PI * 180;
     }
-    document.getElementById("half").value = Math.acos(dir.y)/Math.PI*180;
-    
+    alfa = Math.acos(dir.y)
+    document.getElementById("half").value = alfa / Math.PI * 180;
+
 }
 
-document.getElementById("XGate").addEventListener("click", applyXGate);
-document.getElementById("YGate").addEventListener("click", applyYGate);
-document.getElementById("ZGate").addEventListener("click", applyZGate);
+function BuildGate() {
+    document.getElementById("applyGates").style.display = "none";
+    document.getElementById("buildGate").style.display = "block";
+}
+
+function Exit() {
+    document.getElementById("applyGates").style.display = "block";
+    document.getElementById("buildGate").style.display = "none";
+}
+
+let gatesfun = [];
+
+function addXGate() {
+    document.getElementById("Gates").textContent = "X" + document.getElementById("Gates").textContent;
+    gatesfun.push(invokeXGate);
+}
+
+function addYGate() {
+    document.getElementById("Gates").textContent = "Y" + document.getElementById("Gates").textContent;
+    gatesfun.push(invokeYGate);
+}
+
+function addZGate() {
+    document.getElementById("Gates").textContent = "Z" + document.getElementById("Gates").textContent;
+    gatesfun.push(invokeZGate);
+}
+
+function addSGate() {
+    document.getElementById("Gates").textContent = "S" + document.getElementById("Gates").textContent;
+    gatesfun.push(applySGate);
+}
+
+function addHGate() {
+    document.getElementById("Gates").textContent = "H" + document.getElementById("Gates").textContent;
+    gatesfun.push(invokeHadamardGate);
+}
+
+function invokeGates() {
+    for(let i = 0; i < gatesfun.length; i++) {
+        gatesfun[i]();
+    }
+}
+
+document.getElementById("XGate").addEventListener("click", invokeXGate);
+document.getElementById("YGate").addEventListener("click", invokeYGate);
+document.getElementById("ZGate").addEventListener("click", invokeZGate);
 document.getElementById("SGate").addEventListener("click", applySGate);
-document.getElementById("Hadamard").addEventListener("click", applyHadamardGate);
+document.getElementById("Hadamard").addEventListener("click", invokeHadamardGate);
+
+document.getElementById("AddQubit").addEventListener("click", addArrow);
+
+document.getElementById("bgButton").addEventListener("click", BuildGate);
+document.getElementById("addXGate").addEventListener("click", addXGate);
+document.getElementById("addYGate").addEventListener("click", addYGate);
+document.getElementById("addZGate").addEventListener("click", addZGate);
+document.getElementById("addSGate").addEventListener("click", addSGate);
+document.getElementById("addHadamard").addEventListener("click", addHGate);
+
+document.getElementById("UseGates").addEventListener("click", invokeGates);
+
+document.getElementById("ExitButton").addEventListener("click", Exit);
+
 document.getElementById("half").addEventListener("input", setAngles);
 document.getElementById("whole").addEventListener("input", setAngles);
