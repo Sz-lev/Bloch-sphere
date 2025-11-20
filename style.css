@@ -4,8 +4,8 @@ body {
 }
 
 div#container {
-    width: 800px;
-    height: 800px;
+    width: 600px;
+    height: 600px;
     position: relative;
     padding: 0;
     background-color: blue;
@@ -14,7 +14,7 @@ div#container {
 
 div.Right-Plain {
     float: right;
-    width: calc(100% - 800px);
+    width: calc(100% - 600px);
     text-align: center;
 }
 
@@ -28,6 +28,28 @@ button {
     margin-top: 10px;
 }
 
+#applyGates {
+    border: 1px solid black;
+}
+
 #buildGate {
     display: none;
+    border: 1px solid black;
+}
+
+#GatesDiv {
+    margin: 10px;
+    overflow-wrap: break-word;
+}
+
+.GateSpan {
+    display: inline-block;
+    padding: 5px;
+    margin: 2px;
+    border: 1px solid black;
+    box-sizing: border-box;
+}
+
+#qubitDiv {
+    border-bottom: 1px solid black;
 }

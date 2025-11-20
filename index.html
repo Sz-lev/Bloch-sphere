@@ -9,7 +9,15 @@
 
 <body>
     <div class="Right-Plain">
+        <div>
+            <h1>
+                Bloch gömb
+            </h1>
+        </div>
         <div id="applyGates">
+            <div>
+                <h3>Alkalmazható kapuk</h3>
+            </div>
             <button id="XGate">X Gate</button>
             <button id="YGate">Y Gate</button>
             <button id="ZGate">Z Gate</button>
@@ -19,17 +27,28 @@
         </div>
 
         <div id="buildGate">
+            <div>
+                <h3>
+                    Kapuk sorba kapcsolása
+                </h3>
+            </div>
             <button id="addXGate">Add X Gate</button>
             <button id="addYGate">Add Y Gate</button>
             <button id="addZGate">Add Z Gate</button>
             <button id="addSGate"> AddS Gate</button>
             <button id="addHadamard">Add Hadamard Gate</button>
-            <div><textarea name="" id="Gates" disabled></textarea></div>
+            <div id="GatesDiv">
+                <span>QuBit -> </span>
+            </div>
             <button id="UseGates">Use Gates</button>
             <button id="ExitButton">Exit</button>
+            <button id="DeleteGates">Clear</button>
         </div>
 
-        <div>
+        <div id="qubitDiv">
+            <div>
+                <h3>Tetszőleges qubit beállítása</h3>
+            </div>
             <div class="slidecontainer">
                 <span>0</span>
                 <input type="range" min="0" max="180" value="90" class="slider" id="half">

@@ -96,7 +96,7 @@ function addArrow() {
     const qubitName = "QuBit_" + index;
     const newArrowHelper = new THREE.ArrowHelper(newDir, origin, 1, hex);
     qubitList.set(qubitName, [newDir, newArrowHelper]);
-    
+
     scene.add(newArrowHelper);
 
     const divElement = document.createElement("div");
@@ -209,7 +209,7 @@ function ZGate(direction, arrow) {
     arrow.setDirection(direction);
 }
 
-function invokeHadamardGate() {
+function invokeHGate() {
     for (let element of qubitList.values()) {
         HadamardGate(element[0], element[1])
     }
@@ -227,7 +227,7 @@ function HadamardGate(direction, arrow) {
     arrow.setDirection(direction);
 }
 
-function applySGate() {
+function invokeSGate() {
     for (let element of qubitList.values()) {
         SGate(element[0], element[1])
     }
@@ -279,29 +279,39 @@ function Exit() {
 
 let gatesfun = [];
 
-function addXGate() {
-    document.getElementById("Gates").textContent = "X" + document.getElementById("Gates").textContent;
-    gatesfun.push(invokeXGate);
+
+function addGate(name) {
+    addGateSpan(name);
+    //document.getElementById("Gates").textContent = document.getElementById("Gates").textContent + name;
+    switch (name) {
+
+        case "X":
+            gatesfun.push(invokeXGate);
+            break;
+        case "Y":
+            gatesfun.push(invokeYGate);
+            break;
+        case "Z":
+            gatesfun.push(invokeZGate);
+            break;
+        case "S":
+            gatesfun.push(invokeSGate);
+            break;
+        case "H":
+            gatesfun.push(invokeHGate);
+            break;
+    }
 }
 
-function addYGate() {
-    document.getElementById("Gates").textContent = "Y" + document.getElementById("Gates").textContent;
-    gatesfun.push(invokeYGate);
-}
-
-function addZGate() {
-    document.getElementById("Gates").textContent = "Z" + document.getElementById("Gates").textContent;
-    gatesfun.push(invokeZGate);
-}
-
-function addSGate() {
-    document.getElementById("Gates").textContent = "S" + document.getElementById("Gates").textContent;
-    gatesfun.push(applySGate);
-}
-
-function addHGate() {
-    document.getElementById("Gates").textContent = "H" + document.getElementById("Gates").textContent;
-    gatesfun.push(invokeHadamardGate);
+function addGateSpan(name) {
+    const gDiv = document.getElementById("GatesDiv");
+    const span = document.createElement("span");
+    span.textContent = name;
+    span.style.padding = "10px";
+    span.style.border = "1px solid black";
+    span.style.marginLeft = "2px";
+    span.className = "GateSpan";
+    gDiv.appendChild(span);
 }
 
 function invokeGates() {
@@ -310,24 +320,36 @@ function invokeGates() {
     }
 }
 
+function deleteGates() {
+    gatesfun.splice(0, gatesfun.length);
+    const gateDiv = document.getElementById("GatesDiv");
+    const nodes = gateDiv.childNodes;
+
+    for(const i in nodes) {
+        console.log(i);
+        //gateDiv.removeChild();
+
+    }
+}
+
 document.getElementById("XGate").addEventListener("click", invokeXGate);
 document.getElementById("YGate").addEventListener("click", invokeYGate);
 document.getElementById("ZGate").addEventListener("click", invokeZGate);
-document.getElementById("SGate").addEventListener("click", applySGate);
-document.getElementById("Hadamard").addEventListener("click", invokeHadamardGate);
+document.getElementById("SGate").addEventListener("click", invokeSGate);
+document.getElementById("Hadamard").addEventListener("click", invokeHGate);
 
 document.getElementById("AddQubit").addEventListener("click", addArrow);
 
 document.getElementById("bgButton").addEventListener("click", BuildGate);
-document.getElementById("addXGate").addEventListener("click", addXGate);
-document.getElementById("addYGate").addEventListener("click", addYGate);
-document.getElementById("addZGate").addEventListener("click", addZGate);
-document.getElementById("addSGate").addEventListener("click", addSGate);
-document.getElementById("addHadamard").addEventListener("click", addHGate);
+document.getElementById("addXGate").addEventListener("click", () => addGate("X"));
+document.getElementById("addYGate").addEventListener("click", () => addGate("Y"));
+document.getElementById("addZGate").addEventListener("click", () => addGate("Z"));
+document.getElementById("addSGate").addEventListener("click", () => addGate("S"));
+document.getElementById("addHadamard").addEventListener("click", () => addGate("H"));
 
 document.getElementById("UseGates").addEventListener("click", invokeGates);
-
 document.getElementById("ExitButton").addEventListener("click", Exit);
+document.getElementById("DeleteGates").addEventListener("click", deleteGates);
 
 document.getElementById("half").addEventListener("input", setAngles);
 document.getElementById("whole").addEventListener("input", setAngles);
