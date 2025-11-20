@@ -103,11 +103,11 @@ function addArrow() {
 
     scene.add(newArrowHelper);
 
-    createNewQubitHTML(qubitName);
+    createNewQubitHTML(qubitName, newArrowHelper);
 }
 
 //Adds the new qubit as an HTML element to the page
-function createNewQubitHTML(name,) {
+function createNewQubitHTML(name, arrow) {
     const divElement = document.createElement("div");
     divElement.style.display = "inline-block";
     divElement.style.margin = "15px";
@@ -118,8 +118,8 @@ function createNewQubitHTML(name,) {
     delButton.textContent = "Delete";
     delButton.addEventListener("click", () => {
         document.getElementById("qubits").removeChild(divElement);
-        qubitList.delete(qubitName);
-        scene.remove(newArrowHelper);
+        qubitList.delete(name);
+        scene.remove(arrow);
     });
     divElement.appendChild(delButton);
 
@@ -265,6 +265,7 @@ function invokePGate() {
     setSlides();
 }
 
+// This function can be used for the Z, S and T gates with PI, PI/2 and PI/4 angle values
 function PGate(direction, arrow, angle) {
     updateParametricVars();
     direction.x = Math.cos(beta + angle) * Math.sin(alfa);
