@@ -3,23 +3,24 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
 
+/**
+ * The container is the HTML element that contains the bloch sphere.
+ * The alfa and beta values are used in the parametric equation of the sphere
+ */
 const container = document.getElementById("container");
 let alfa = document.getElementById("half").value / 180 * Math.PI;
 let beta = document.getElementById("whole").value / 180 * Math.PI;
 
+
+//Initializing the scene, camera and renderer
 const scene = new THREE.Scene();
-
 const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.5, 25);
-
 camera.position.set(1, 1, 3);
 camera.lookAt(0, 0, 0);
-
 const renderer = new THREE.WebGLRenderer();
-
-
-
 renderer.setSize(container.clientWidth, container.clientHeight);
 
+//Adds the canvas of the renderer to the container HTML element
 container.appendChild(renderer.domElement);
 
 
@@ -31,12 +32,12 @@ const sphereMat = new THREE.MeshBasicMaterial({
     transparent: true,
 });
 const sphere = new THREE.Mesh(sphereGeo, sphereMat);
-
 scene.add(sphere);
 
-//Circle
-let circlePoints = []
 
+//Circle
+//Calculate the points of the circle
+let circlePoints = []
 const transmission = Math.PI / 50 * 2;
 for (let i = 0; i <= 50; i++) {
     circlePoints.push(new THREE.Vector3(Math.sin(i * transmission), Math.cos(i * transmission), 0));
@@ -55,7 +56,7 @@ scene.add(circle2);
 scene.add(circle3);
 
 
-//Axis
+//Axes
 let axisPointsX = [new THREE.Vector3(1, 0, 0), new THREE.Vector3(-1, 0, 0)];
 let axisPointsY = [new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, -1, 0)];
 let axisPointsZ = [new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, -1)];
@@ -79,17 +80,20 @@ scene.add(lineY);
 scene.add(lineZ);
 
 
-//arrow
-let dir = new THREE.Vector3(Math.cos(beta) * Math.sin(alfa), Math.cos(alfa), Math.sin(beta) * Math.sin(alfa));
+//Initializing the first and main rrow
+let dir = new THREE.Vector3(Math.cos(beta) * Math.sin(alfa), Math.cos(alfa), -Math.sin(beta) * Math.sin(alfa));
 const origin = new THREE.Vector3(0, 0, 0);
 let hex = 0xff0000;
 const arrowHelper = new THREE.ArrowHelper(dir, origin, 1, hex);
 
 scene.add(arrowHelper);
 
+
+//initializing the qubit list
 let qubitList = new Map();
 let index = 1;
 
+//Adds a qubit and arrow with the current direction
 function addArrow() {
     let newDir = new THREE.Vector3(dir.x, dir.y, dir.z);
     hex = Math.floor(Math.random() * (256 * 256 * 256));
@@ -99,9 +103,16 @@ function addArrow() {
 
     scene.add(newArrowHelper);
 
+    createNewQubitHTML(qubitName);
+}
+
+//Adds the new qubit as an HTML element to the page
+function createNewQubitHTML(name,) {
     const divElement = document.createElement("div");
+    divElement.style.display = "inline-block";
+    divElement.style.margin = "15px";
     const spanElement = document.createElement("span");
-    spanElement.textContent = qubitName;
+    spanElement.textContent = name;
     divElement.appendChild(spanElement);
     const delButton = document.createElement("button");
     delButton.textContent = "Delete";
@@ -117,7 +128,7 @@ function addArrow() {
     index = index + 1;
 }
 
-//labels
+//Initializing the labelrenderer used for the labels of the axes
 const labelRenderer = new CSS2DRenderer();
 labelRenderer.setSize(container.clientWidth, container.clientHeight);
 labelRenderer.domElement.style.position = 'absolute';
@@ -125,6 +136,7 @@ labelRenderer.domElement.style.top = '0px';
 container.appendChild(labelRenderer.domElement);
 
 
+//Function to create the labels with the given name and position
 function makeLabel(text, position) {
     const div = document.createElement('div');
     div.className = 'label';
@@ -144,11 +156,11 @@ scene.add(makeLabel("|–⟩", new THREE.Vector3(-1.1, 0, 0)));
 scene.add(makeLabel("|0⟩", new THREE.Vector3(0, 1.1, 0)));
 scene.add(makeLabel("|1⟩", new THREE.Vector3(0, -1.1, 0)));
 
+
+//Creating the control to be able to rotate the sphere with the mouse
 const controls = new OrbitControls(camera, container);
 
-animate();
-controls.update();
-
+//The function for the animation, updates the OrbitControl, the renderer and the labelrenderer
 function animate() {
     requestAnimationFrame(animate);
 
@@ -157,13 +169,11 @@ function animate() {
     labelRenderer.render(scene, camera);
 }
 
-// window.addEventListener("resize", () => {
-//     camera.aspect = container.clientWidth / container.clientHeight;
-//     renderer.setSize(container.clientWidth, container.clientHeight);
-//     labelRenderer.setSize(container.clientWidth, container.clientHeight);
-// });
+animate();
+controls.update();
 
-//TODO functions to rotate
+
+//functions to apply the effects of a quantum gate
 function invokeXGate() {
     for (let element of qubitList.values()) {
         XGate(element[0], element[1])
@@ -243,23 +253,52 @@ function SGate(direction, arrow) {
     arrow.setDirection(direction);
 }
 
-function setAngles() {
+
+function invokePGate() {
+    let angle = document.getElementById("PAngle").value/180*Math.PI;
+
+    for (let element of qubitList.values()) {
+        PGate(element[0], element[1], angle)
+    }
+
+    PGate(dir, arrowHelper, angle);
+    setSlides();
+}
+
+function PGate(direction, arrow, angle) {
+    updateParametricVars();
+    direction.x = Math.cos(beta + angle) * Math.sin(alfa);
+    direction.z = -Math.sin(beta + angle) * Math.sin(alfa);
+    arrow.setDirection(direction);
+    setSlides();
+}
+
+function updateParametricVars() {
     alfa = document.getElementById("half").value / 180 * Math.PI;
     beta = document.getElementById("whole").value / 180 * Math.PI;
 
+}
+
+
+//Updates the variables used in the parametric equation of the sphere, and direction variable, and then sets the arrow in that direction
+function setAngles() {
+    updateParametricVars();
+
     dir.x = Math.cos(beta) * Math.sin(alfa);
     dir.y = Math.cos(alfa);
-    dir.z = Math.sin(beta) * Math.sin(alfa);
+    dir.z = -Math.sin(beta) * Math.sin(alfa);
     arrowHelper.setDirection(dir);
 }
 
+
+//Sets the values of the rangeslides calculated from the actual vector of the direction
 function setSlides() {
-    let res = ((Math.atan2(dir.z, dir.x)) / Math.PI * 180);
+    let res = ((Math.atan2(-dir.z, dir.x)) / Math.PI * 180);
     if (res < 0) {
-        beta = Math.PI * 2 + (Math.atan2(dir.z, dir.x));
+        beta = Math.PI * 2 + (Math.atan2(-dir.z, dir.x));
         document.getElementById("whole").value = (beta) / Math.PI * 180;
     } else {
-        beta = Math.atan2(dir.z, dir.x);
+        beta = Math.atan2(-dir.z, dir.x);
         document.getElementById("whole").value = (beta) / Math.PI * 180;
     }
     alfa = Math.acos(dir.y)
@@ -267,42 +306,47 @@ function setSlides() {
 
 }
 
+//Sets the build gate section visible and hides the apply gates section
 function BuildGate() {
     document.getElementById("applyGates").style.display = "none";
     document.getElementById("buildGate").style.display = "block";
 }
 
+//Sets the apply gates section visible and hides the build gates section
 function Exit() {
     document.getElementById("applyGates").style.display = "block";
     document.getElementById("buildGate").style.display = "none";
 }
 
-let gatesfun = [];
+
+//List that stores the linked gates in order
+let gatesFunList = [];
 
 
+//Adds the effect of the new gate to the gatesFunList
 function addGate(name) {
     addGateSpan(name);
-    //document.getElementById("Gates").textContent = document.getElementById("Gates").textContent + name;
     switch (name) {
 
         case "X":
-            gatesfun.push(invokeXGate);
+            gatesFunList.push(invokeXGate);
             break;
         case "Y":
-            gatesfun.push(invokeYGate);
+            gatesFunList.push(invokeYGate);
             break;
         case "Z":
-            gatesfun.push(invokeZGate);
+            gatesFunList.push(invokeZGate);
             break;
         case "S":
-            gatesfun.push(invokeSGate);
+            gatesFunList.push(invokeSGate);
             break;
         case "H":
-            gatesfun.push(invokeHGate);
+            gatesFunList.push(invokeHGate);
             break;
     }
 }
 
+//Creates the HTML element that represents a gate in the linked gates
 function addGateSpan(name) {
     const gDiv = document.getElementById("GatesDiv");
     const span = document.createElement("span");
@@ -314,29 +358,30 @@ function addGateSpan(name) {
     gDiv.appendChild(span);
 }
 
+//Invokes the effects of the linked gates
 function invokeGates() {
-    for (let i = 0; i < gatesfun.length; i++) {
-        gatesfun[i]();
+    for (let i = 0; i < gatesFunList.length; i++) {
+        gatesFunList[i]();
     }
 }
 
+//Deletes the linked gates from the list and from the HTML
 function deleteGates() {
-    gatesfun.splice(0, gatesfun.length);
+    gatesFunList.splice(0, gatesFunList.length);
     const gateDiv = document.getElementById("GatesDiv");
-    const nodes = gateDiv.childNodes;
-
-    for(const i in nodes) {
-        console.log(i);
-        //gateDiv.removeChild();
-
+    while (gateDiv.childElementCount > 1) {
+        const child = gateDiv.lastChild;
+        gateDiv.removeChild(child);
     }
 }
 
+//Setting the effects of the buttons clicked with the corresponding function
 document.getElementById("XGate").addEventListener("click", invokeXGate);
 document.getElementById("YGate").addEventListener("click", invokeYGate);
 document.getElementById("ZGate").addEventListener("click", invokeZGate);
 document.getElementById("SGate").addEventListener("click", invokeSGate);
 document.getElementById("Hadamard").addEventListener("click", invokeHGate);
+document.getElementById("PGate").addEventListener("click", invokePGate);
 
 document.getElementById("AddQubit").addEventListener("click", addArrow);
 

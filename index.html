@@ -11,18 +11,26 @@
     <div class="Right-Plain">
         <div>
             <h1>
-                Bloch gömb
+                Bloch gömb szimulátor
             </h1>
         </div>
         <div id="applyGates">
             <div>
                 <h3>Alkalmazható kapuk</h3>
             </div>
-            <button id="XGate">X Gate</button>
-            <button id="YGate">Y Gate</button>
-            <button id="ZGate">Z Gate</button>
-            <button id="SGate">S Gate</button>
-            <button id="Hadamard">Hadamard Gate</button>
+            <div>
+                <button id="XGate">X Gate</button>
+                <button id="YGate">Y Gate</button>
+                <button id="ZGate">Z Gate</button>
+                <button id="SGate">S Gate</button>
+                <button id="Hadamard">Hadamard Gate</button>
+            </div>
+            <div>
+                <label for="angleInput">P Gate angle parameter:</label>
+                <input type="number" min="0" max="360" name="angleInput" value="90" id="PAngle">
+                <button id="PGate">P Gate</button>
+            </div>
+
             <button id="bgButton">Build Gate</button>
         </div>
 
@@ -51,22 +59,22 @@
             </div>
             <div class="slidecontainer">
                 <span>0</span>
-                <input type="range" min="0" max="180" value="90" class="slider" id="half">
+                <input type="range" min="0" max="180" value="0" class="slider" id="half">
                 <span>π</span>
             </div>
             <div class="slidecontainer">
                 <span>0</span>
-                <input type="range" min="0" max="360" value="180" class="slider" id="whole">
+                <input type="range" min="0" max="360" value="0" class="slider" id="whole">
                 <span>2π</span>
             </div>
             <button id="AddQubit">Add qubit</button>
             <div id="qubits">
 
             </div>
-            
+
         </div>
 
-        
+
     </div>
 
     <div id="container"></div>
