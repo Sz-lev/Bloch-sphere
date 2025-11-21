@@ -19,19 +19,30 @@
                 <h3>Alkalmazható kapuk</h3>
             </div>
             <div>
-                <button id="XGate">X Gate</button>
-                <button id="YGate">Y Gate</button>
-                <button id="ZGate">Z Gate</button>
-                <button id="SGate">S Gate</button>
-                <button id="Hadamard">Hadamard Gate</button>
+                <button id="XGate">X Kapu</button>
+                <button id="YGate">Y Kapu</button>
+                <button id="ZGate">Z Kapu</button>
+                <button id="SGate">S Kapu</button>
+                <button id="TGate">T Kapu</button>
+                <button id="Hadamard">Hadamard Kapu</button>
             </div>
             <div>
-                <label for="angleInput">P Gate angle parameter:</label>
+                <label for="angleInput">P Kapu forgatási szöge:</label>
                 <input type="number" min="0" max="360" name="angleInput" value="90" id="PAngle">
-                <button id="PGate">P Gate</button>
+                <button id="PGate">P Kapu</button>
+            </div>
+            <div>
+                <label for="angleInput">Rx Kapu forgatási szöge:</label>
+                <input type="number" min="0" max="360" name="angleInput" value="90" id="RxAngle">
+                <button id="RxGate">Rx Kapu</button>
+            </div>
+            <div>
+                <label for="angleInput">Ry Kapu forgatási szöge:</label>
+                <input type="number" min="0" max="360" name="angleInput" value="90" id="RyAngle">
+                <button id="RyGate">Ry Kapu</button>
             </div>
 
-            <button id="bgButton">Build Gate</button>
+            <button id="bgButton">Kapuk felépítése</button>
         </div>
 
         <div id="buildGate">
@@ -40,17 +51,33 @@
                     Kapuk sorba kapcsolása
                 </h3>
             </div>
-            <button id="addXGate">Add X Gate</button>
-            <button id="addYGate">Add Y Gate</button>
-            <button id="addZGate">Add Z Gate</button>
-            <button id="addSGate"> AddS Gate</button>
-            <button id="addHadamard">Add Hadamard Gate</button>
+            <button id="addXGate">X Kapu Hozzáadása</button>
+            <button id="addYGate">Y Kapu Hozzáadása</button>
+            <button id="addZGate">Z Kapu Hozzáadása</button>
+            <button id="addSGate">S Kapu Hozzáadása</button>
+            <button id="addTGate">T Kapu Hozzáadása</button>
+            <button id="addHadamard">Hadamard Kapu Hozzáadása</button>
+            <div>
+                <label for="angleInput">P Kapu forgatási szöge:</label>
+                <input type="number" min="0" max="360" name="angleInput" value="90" id="addPAngle">
+                <button id="addPGate">P Kapu</button>
+            </div>
+            <div>
+                <label for="angleInput">Rx Kapu forgatási szöge:</label>
+                <input type="number" min="0" max="360" name="angleInput" value="90" id="addRxAngle">
+                <button id="addRxGate">Rx Kapu</button>
+            </div>
+            <div>
+                <label for="angleInput">Ry Kapu forgatási szöge:</label>
+                <input type="number" min="0" max="360" name="angleInput" value="90" id="addRyAngle">
+                <button id="addRyGate">Ry Kapu</button>
+            </div>
             <div id="GatesDiv">
                 <span>QuBit -> </span>
             </div>
-            <button id="UseGates">Use Gates</button>
-            <button id="ExitButton">Exit</button>
-            <button id="DeleteGates">Clear</button>
+            <button id="UseGates">Kapuk használata</button>
+            <button id="ExitButton">Kilépés</button>
+            <button id="DeleteGates">Törlés</button>
         </div>
 
         <div id="qubitDiv">
@@ -67,7 +94,7 @@
                 <input type="range" min="0" max="360" value="0" class="slider" id="whole">
                 <span>2π</span>
             </div>
-            <button id="AddQubit">Add qubit</button>
+            <button id="AddQubit">Qbit Hozzáadása</button>
             <div id="qubits">
 
             </div>

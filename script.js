@@ -174,51 +174,6 @@ controls.update();
 
 
 //functions to apply the effects of a quantum gate
-function invokeXGate() {
-    for (let element of qubitList.values()) {
-        XGate(element[0], element[1])
-    }
-
-    XGate(dir, arrowHelper);
-    setSlides();
-}
-
-function XGate(direction, arrow) {
-    direction.y = -direction.y;
-    direction.z = -direction.z;
-    arrow.setDirection(direction);
-}
-
-function invokeYGate() {
-    for (let element of qubitList.values()) {
-        YGate(element[0], element[1])
-    }
-
-    YGate(dir, arrowHelper);
-    setSlides();
-}
-
-function YGate(direction, arrow) {
-    direction.x = -direction.x;
-    direction.z = -direction.z;
-    arrow.setDirection(direction);
-}
-
-function invokeZGate() {
-    for (let element of qubitList.values()) {
-        ZGate(element[0], element[1])
-    }
-
-    ZGate(dir, arrowHelper);
-    setSlides();
-}
-
-function ZGate(direction, arrow) {
-    direction.x = -direction.x;
-    direction.y = -direction.y;
-    arrow.setDirection(direction);
-}
-
 function invokeHGate() {
     for (let element of qubitList.values()) {
         HadamardGate(element[0], element[1])
@@ -229,33 +184,66 @@ function invokeHGate() {
 }
 
 function HadamardGate(direction, arrow) {
-    let tmp = direction.y;
-    direction.y = direction.x;
-    direction.x = tmp;
-    direction.z = -direction.z;
+    PGate(direction, arrow, Math.PI/2);
+    RxGate(direction, arrow, -Math.PI/2);
+    PGate(direction, arrow, Math.PI/2);
 
     arrow.setDirection(direction);
 }
 
-function invokeSGate() {
-    for (let element of qubitList.values()) {
-        SGate(element[0], element[1])
+function invokeRxGate(angle){
+
+    if (angle === undefined) {
+        angle = document.getElementById("RxAngle").value / 180 * Math.PI;
     }
 
-    SGate(dir, arrowHelper);
+    for (let element of qubitList.values()) {
+        RxGate(element[0], element[1], angle)
+    }
+
+    RxGate(dir, arrowHelper, angle);
     setSlides();
 }
 
-function SGate(direction, arrow) {
-    let tmp = -direction.x;
-    direction.x = direction.z;
-    direction.z = tmp;
+function RxGate(direction, arrow, angle) {
+    let z = direction.z;
+    let y = direction.y;
+    direction.y = (Math.cos(angle)*y) + (Math.sin(angle)*z);
+    direction.z = -(Math.sin(angle)*y) + (Math.cos(angle)*z);
+
     arrow.setDirection(direction);
 }
 
+function invokeRyGate(angle){
+    
+    if (angle === undefined) {
+        angle = document.getElementById("RyAngle").value / 180 * Math.PI;
+    }
 
-function invokePGate() {
-    let angle = document.getElementById("PAngle").value/180*Math.PI;
+    for (let element of qubitList.values()) {
+        RyGate(element[0], element[1], angle)
+    }
+
+    RyGate(dir, arrowHelper, angle);
+    setSlides();
+    return angle
+}
+
+function RyGate(direction, arrow, angle) {
+    let x = direction.x;
+    let y = direction.y;
+
+    direction.x =  (Math.cos(angle)*x) + (Math.sin(angle)*y);
+    direction.y =  -(Math.sin(angle)*x) + (Math.cos(angle)*y);
+
+    arrow.setDirection(direction);
+}
+
+function invokePGate(angle) {
+
+    if (angle === undefined) {
+        angle = document.getElementById("PAngle").value / 180 * Math.PI;
+    }
 
     for (let element of qubitList.values()) {
         PGate(element[0], element[1], angle)
@@ -265,13 +253,12 @@ function invokePGate() {
     setSlides();
 }
 
-// This function can be used for the Z, S and T gates with PI, PI/2 and PI/4 angle values
 function PGate(direction, arrow, angle) {
-    updateParametricVars();
-    direction.x = Math.cos(beta + angle) * Math.sin(alfa);
-    direction.z = -Math.sin(beta + angle) * Math.sin(alfa);
+    let tmp = direction.x;
+    direction.x = (Math.cos(angle)*tmp) + (Math.sin(angle)*direction.z);
+    direction.z = -(Math.sin(angle)*tmp) + (Math.cos(angle)*direction.z);
+
     arrow.setDirection(direction);
-    setSlides();
 }
 
 function updateParametricVars() {
@@ -326,32 +313,53 @@ let gatesFunList = [];
 
 //Adds the effect of the new gate to the gatesFunList
 function addGate(name) {
-    addGateSpan(name);
+    let angle;
     switch (name) {
-
         case "X":
-            gatesFunList.push(invokeXGate);
+            gatesFunList.push(() => invokeRxGate(Math.PI));
             break;
         case "Y":
-            gatesFunList.push(invokeYGate);
+            gatesFunList.push(() => invokeRyGate(Math.PI));
             break;
         case "Z":
-            gatesFunList.push(invokeZGate);
+            gatesFunList.push(() => invokePGate(Math.PI));
             break;
         case "S":
-            gatesFunList.push(invokeSGate);
+            gatesFunList.push(() => invokePGate(Math.PI/2));
+            break;
+        case "T":
+            gatesFunList.push(() => invokePGate(Math.PI/4));
             break;
         case "H":
             gatesFunList.push(invokeHGate);
             break;
+        case "P":
+            angle = document.getElementById("addPAngle").value;
+            gatesFunList.push(() => invokePGate(degreeToRad(angle)));
+            break;
+        case "Rx":
+            angle = document.getElementById("addRxAngle").value;
+
+            gatesFunList.push(() => invokeRxGate(degreeToRad(angle)));
+            break;
+        case "Ry":
+            angle = document.getElementById("addRyAngle").value;
+            gatesFunList.push(() => invokeRyGate(degreeToRad(angle)));
+            break;
     }
+    addGateSpan(name, angle);
 }
 
 //Creates the HTML element that represents a gate in the linked gates
-function addGateSpan(name) {
+function addGateSpan(name, angle) {
     const gDiv = document.getElementById("GatesDiv");
     const span = document.createElement("span");
-    span.textContent = name;
+    if(angle === undefined){
+        span.textContent = name;
+    }
+    else{
+        span.textContent = name + '(' + angle + "fok" + ')';
+    }
     span.style.padding = "10px";
     span.style.border = "1px solid black";
     span.style.marginLeft = "2px";
@@ -376,13 +384,26 @@ function deleteGates() {
     }
 }
 
+function degreeToRad(degree){
+    let rad = degree / 180 * Math.PI;
+    return rad;
+}
+
+function radToDegree(rad){
+    let degree = rad * 180 / Math.PI;
+    return degree;
+}
+
 //Setting the effects of the buttons clicked with the corresponding function
-document.getElementById("XGate").addEventListener("click", invokeXGate);
-document.getElementById("YGate").addEventListener("click", invokeYGate);
-document.getElementById("ZGate").addEventListener("click", invokeZGate);
-document.getElementById("SGate").addEventListener("click", invokeSGate);
+document.getElementById("XGate").addEventListener("click", () => invokeRxGate(Math.PI));
+document.getElementById("YGate").addEventListener("click", () => invokeRyGate(Math.PI));
+document.getElementById("ZGate").addEventListener("click", () => invokePGate(Math.PI));
+document.getElementById("SGate").addEventListener("click", () => invokePGate(Math.PI/2));
+document.getElementById("TGate").addEventListener("click", () => invokePGate(Math.PI/4));
 document.getElementById("Hadamard").addEventListener("click", invokeHGate);
-document.getElementById("PGate").addEventListener("click", invokePGate);
+document.getElementById("PGate").addEventListener("click", () => invokePGate());
+document.getElementById("RxGate").addEventListener("click", () => invokeRxGate());
+document.getElementById("RyGate").addEventListener("click", () => invokeRyGate());
 
 document.getElementById("AddQubit").addEventListener("click", addArrow);
 
@@ -391,7 +412,11 @@ document.getElementById("addXGate").addEventListener("click", () => addGate("X")
 document.getElementById("addYGate").addEventListener("click", () => addGate("Y"));
 document.getElementById("addZGate").addEventListener("click", () => addGate("Z"));
 document.getElementById("addSGate").addEventListener("click", () => addGate("S"));
+document.getElementById("addTGate").addEventListener("click", () => addGate("T"));
 document.getElementById("addHadamard").addEventListener("click", () => addGate("H"));
+document.getElementById("addPGate").addEventListener("click", () => addGate("P"));
+document.getElementById("addRxGate").addEventListener("click", () => addGate("Rx"));
+document.getElementById("addRyGate").addEventListener("click", () => addGate("Ry"));
 
 document.getElementById("UseGates").addEventListener("click", invokeGates);
 document.getElementById("ExitButton").addEventListener("click", Exit);
