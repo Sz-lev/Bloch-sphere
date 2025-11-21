@@ -1,6 +1,7 @@
-import * as THREE from "three";
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+// For local testing purpose
+// import * as THREE from "three";
+// import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+// import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
 
 /**
@@ -129,7 +130,7 @@ function createNewQubitHTML(name, arrow) {
 }
 
 //Initializing the labelrenderer used for the labels of the axes
-const labelRenderer = new CSS2DRenderer();
+const labelRenderer = new THREE.CSS2DRenderer();
 labelRenderer.setSize(container.clientWidth, container.clientHeight);
 labelRenderer.domElement.style.position = 'absolute';
 labelRenderer.domElement.style.top = '0px';
@@ -144,7 +145,7 @@ function makeLabel(text, position) {
     div.style.color = 'white';
     div.style.fontSize = '20px';
 
-    const label = new CSS2DObject(div);
+    const label = new THREE.CSS2DObject(div);
     label.position.copy(position);
     return label;
 }
@@ -158,7 +159,7 @@ scene.add(makeLabel("|1⟩", new THREE.Vector3(0, -1.1, 0)));
 
 
 //Creating the control to be able to rotate the sphere with the mouse
-const controls = new OrbitControls(camera, container);
+const controls = new THREE.OrbitControls(camera, container);
 
 //The function for the animation, updates the OrbitControl, the renderer and the labelrenderer
 function animate() {
